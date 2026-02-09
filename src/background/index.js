@@ -1,7 +1,8 @@
 const GEMINI_URL = "https://gemini.google.com/";
 const DEFAULT_OPTIONS = {
   showButton: true,
-  autoInject: true
+  autoInject: true,
+  openInBackgroundTab: true
 };
 
 async function getOptions() {
@@ -87,7 +88,7 @@ async function injectUrlIntoGemini(tabId, url) {
 }
 
 async function openGeminiWithUrl(sourceTab) {
-  const { autoInject } = await getOptions();
+  const { autoInject, openInBackgroundTab } = await getOptions();
   const currentWindow = await chrome.windows.getCurrent();
 
   const width = currentWindow.width || 1200;
@@ -97,24 +98,35 @@ async function openGeminiWithUrl(sourceTab) {
   const leftWidth = Math.max(480, Math.floor(width / 2));
   const rightWidth = Math.max(480, width - leftWidth);
 
-  await chrome.windows.update(currentWindow.id, {
-    left,
-    top,
-    width: leftWidth,
-    height
-  });
+  let geminiTabId = null;
+  if (openInBackgroundTab) {
+    const geminiTab = await chrome.tabs.create({
+      url: GEMINI_URL,
+      active: false,
+      windowId: currentWindow.id
+    });
+    geminiTabId = geminiTab?.id ?? null;
+  } else {
+    await chrome.windows.update(currentWindow.id, {
+      left,
+      top,
+      width: leftWidth,
+      height
+    });
 
-  const geminiWindow = await chrome.windows.create({
-    url: GEMINI_URL,
-    left: left + leftWidth,
-    top,
-    width: rightWidth,
-    height,
-    type: "popup",
-    focused: true
-  });
+    const geminiWindow = await chrome.windows.create({
+      url: GEMINI_URL,
+      left: left + leftWidth,
+      top,
+      width: rightWidth,
+      height,
+      type: "popup",
+      focused: true
+    });
 
-  const geminiTabId = geminiWindow.tabs?.[0]?.id;
+    geminiTabId = geminiWindow.tabs?.[0]?.id ?? null;
+  }
+
   if (!autoInject || !geminiTabId || !sourceTab?.url) return;
 
   await waitForTabComplete(geminiTabId);

@@ -22,8 +22,8 @@
   "commands": {
     "open-gemini": {
       "suggested_key": {
-        "default": "Ctrl+Shift+Y",
-        "mac": "Command+Shift+Y"
+        "default": "Ctrl+Shift+U",
+        "mac": "Command+Shift+U"
       },
       "description": "Open Gemini and insert the current YouTube URL"
     }

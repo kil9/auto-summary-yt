@@ -3,26 +3,44 @@ const DEFAULT_OPTIONS = {
 };
 
 const BUTTON_ID = "auto-summary-yt-button";
+let observer = null;
+
+function getTitleElement() {
+  return (
+    document.querySelector("ytd-watch-metadata h1") ||
+    document.querySelector("#title h1")
+  );
+}
+
+function insertAfter(target, node) {
+  const parent = target.parentNode;
+  if (!parent) return;
+  if (target.nextSibling) {
+    parent.insertBefore(node, target.nextSibling);
+  } else {
+    parent.appendChild(node);
+  }
+}
 
 function createButton() {
-  if (document.getElementById(BUTTON_ID)) return;
+  if (document.getElementById(BUTTON_ID)) return true;
+
+  const titleElement = getTitleElement();
+  if (!titleElement) return false;
 
   const button = document.createElement("button");
   button.id = BUTTON_ID;
   button.type = "button";
   button.textContent = "Gemini";
-  button.style.position = "fixed";
-  button.style.right = "16px";
-  button.style.bottom = "16px";
-  button.style.zIndex = "2147483647";
-  button.style.padding = "8px 12px";
+  button.style.marginLeft = "8px";
+  button.style.padding = "4px 10px";
   button.style.borderRadius = "999px";
   button.style.border = "1px solid #e1e3e6";
   button.style.background = "#ffffff";
   button.style.color = "#111111";
   button.style.fontSize = "12px";
   button.style.cursor = "pointer";
-  button.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.15)";
+  button.style.verticalAlign = "middle";
 
   button.addEventListener("click", () => {
     chrome.runtime.sendMessage({
@@ -31,7 +49,8 @@ function createButton() {
     });
   });
 
-  document.documentElement.appendChild(button);
+  insertAfter(titleElement, button);
+  return true;
 }
 
 function removeButton() {
@@ -39,11 +58,28 @@ function removeButton() {
   if (button) button.remove();
 }
 
+function startObserver() {
+  if (observer || !document.body) return;
+  observer = new MutationObserver(() => {
+    if (document.getElementById(BUTTON_ID)) return;
+    createButton();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+function stopObserver() {
+  if (!observer) return;
+  observer.disconnect();
+  observer = null;
+}
+
 function updateButtonVisibility(showButton) {
   if (showButton) {
-    createButton();
+    const created = createButton();
+    if (!created) startObserver();
   } else {
     removeButton();
+    stopObserver();
   }
 }
 
@@ -55,6 +91,13 @@ function init() {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "sync" || !changes.showButton) return;
     updateButtonVisibility(changes.showButton.newValue);
+  });
+
+  document.addEventListener("yt-navigate-finish", () => {
+    if (document.getElementById(BUTTON_ID)) return;
+    chrome.storage.sync.get(DEFAULT_OPTIONS, (items) => {
+      if (items.showButton) updateButtonVisibility(true);
+    });
   });
 }
 

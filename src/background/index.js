@@ -52,7 +52,35 @@ async function injectUrlIntoGemini(tabId, url) {
         input.dispatchEvent(event);
       };
 
+      const clickSendIfReady = () => {
+        const sendButtonSelectors = [
+          "button[aria-label*='Send']",
+          "button[aria-label*='전송']",
+          "button[data-testid='send-button']",
+          "button[type='submit']"
+        ];
+        let button = null;
+        for (const selector of sendButtonSelectors) {
+          button = document.querySelector(selector);
+          if (button) break;
+        }
+        if (button && !button.disabled) {
+          button.click();
+          return true;
+        }
+        return false;
+      };
+
       setValue();
+
+      let attempts = 0;
+      const maxAttempts = 12;
+      const timer = setInterval(() => {
+        attempts += 1;
+        if (clickSendIfReady() || attempts >= maxAttempts) {
+          clearInterval(timer);
+        }
+      }, 250);
     },
     args: [url]
   });

@@ -32,15 +32,28 @@ function createButton() {
   button.id = BUTTON_ID;
   button.type = "button";
   button.textContent = "Gemini";
-  button.style.marginLeft = "8px";
-  button.style.padding = "4px 10px";
-  button.style.borderRadius = "999px";
-  button.style.border = "1px solid #e1e3e6";
-  button.style.background = "#ffffff";
-  button.style.color = "#111111";
-  button.style.fontSize = "12px";
+  button.style.display = "inline-flex";
+  button.style.alignItems = "center";
+  button.style.height = "36px";
+  button.style.padding = "0 16px";
+  button.style.borderRadius = "18px";
+  button.style.border = "none";
+  button.style.background = "var(--yt-spec-badge-chip-background, rgba(0,0,0,0.05))";
+  button.style.color = "var(--yt-spec-text-primary, #0f0f0f)";
+  button.style.fontFamily = "Roboto, Arial, sans-serif";
+  button.style.fontSize = "14px";
+  button.style.fontWeight = "500";
   button.style.cursor = "pointer";
+  button.style.marginLeft = "8px";
   button.style.verticalAlign = "middle";
+  button.style.whiteSpace = "nowrap";
+
+  button.addEventListener("mouseover", () => {
+    button.style.background = "var(--yt-spec-10-percent-layer, rgba(0,0,0,0.1))";
+  });
+  button.addEventListener("mouseout", () => {
+    button.style.background = "var(--yt-spec-badge-chip-background, rgba(0,0,0,0.05))";
+  });
 
   button.addEventListener("click", () => {
     chrome.runtime.sendMessage({

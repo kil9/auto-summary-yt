@@ -52,7 +52,8 @@
 - Gemini 전송 흐름 및 버튼 위치 개선 (`bb6ea60`)
 - 백그라운드 탭 옵션 추가 (`34ba2ce`)
 - 문서(README) 정비 완료 (`b04a080`)
-- SPEC.md 제거, PLAN.md로 통합 예정
+- SPEC.md 제거, PLAN.md로 통합 완료 (`de1ce12`)
+- 버튼 스타일을 YouTube 네이티브 칩(chip) 디자인으로 변경 — v0.1.1
 
 ---
 

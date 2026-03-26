@@ -31,7 +31,6 @@ function createButton() {
   const button = document.createElement("button");
   button.id = BUTTON_ID;
   button.type = "button";
-  button.textContent = "Gemini";
   button.style.display = "inline-flex";
   button.style.alignItems = "center";
   button.style.height = "36px";
@@ -47,6 +46,39 @@ function createButton() {
   button.style.marginLeft = "8px";
   button.style.verticalAlign = "middle";
   button.style.whiteSpace = "nowrap";
+  button.style.gap = "6px";
+
+  const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  icon.setAttribute("viewBox", "0 0 28 28");
+  icon.setAttribute("width", "18");
+  icon.setAttribute("height", "18");
+  icon.setAttribute("aria-hidden", "true");
+  icon.style.flexShrink = "0";
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  const grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+  grad.setAttribute("id", "asy-gemini-grad");
+  grad.setAttribute("x1", "0%");
+  grad.setAttribute("y1", "0%");
+  grad.setAttribute("x2", "100%");
+  grad.setAttribute("y2", "100%");
+  [["0%", "#4285f4"], ["50%", "#9c59d1"], ["100%", "#ea4335"]].forEach(([offset, color]) => {
+    const stop = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+    stop.setAttribute("offset", offset);
+    stop.setAttribute("stop-color", color);
+    grad.appendChild(stop);
+  });
+  defs.appendChild(grad);
+  icon.appendChild(defs);
+  const star = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  star.setAttribute("d", "M14 2C14 8.627 8.627 14 2 14C8.627 14 14 19.373 14 26C14 19.373 19.373 14 26 14C19.373 14 14 8.627 14 2Z");
+  star.setAttribute("fill", "url(#asy-gemini-grad)");
+  icon.appendChild(star);
+
+  const label = document.createElement("span");
+  label.textContent = "요약";
+
+  button.appendChild(icon);
+  button.appendChild(label);
 
   button.addEventListener("mouseover", () => {
     button.style.background = "var(--yt-spec-10-percent-layer, rgba(0,0,0,0.1))";

@@ -1,7 +1,7 @@
 {
   "name": "auto-summary-yt",
   "description": "Open Gemini with the current YouTube URL in split view.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "manifest_version": 3,
   "permissions": ["tabs", "scripting", "windows", "storage"],
   "host_permissions": [
